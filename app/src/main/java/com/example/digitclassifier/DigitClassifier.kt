@@ -62,7 +62,7 @@ class DigitClassifier(private val context: Context) {
         val invert = (sum / grays.size) > 0.5f
 
         // 5. 拼成 [1, 28, 28, 1] float32 ByteBuffer（native 字节序）
-        val input = ByteBuffer.allocateDirect(4L * inputSize * inputSize * 1)
+        val input = ByteBuffer.allocateDirect(4 * inputSize * inputSize)
             .order(ByteOrder.nativeOrder())
         for (v in grays) {
             input.putFloat(if (invert) 1f - v else v)
