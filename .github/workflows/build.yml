@@ -1,0 +1,38 @@
+name: Build Debug APK
+
+# 触发：推到 main/master 分支，或手动在 Actions 页面点 Run workflow
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 配置 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # 安装 Android SDK 并自动接受 license（ubuntu 自带镜像没有 Android SDK）
+      - name: 配置 Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 用 gradle-build-action 自动拉取 Gradle 8.4 并构建（无需本地 gradlew 包装）
+      - name: 构建 Debug APK
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.4
+          arguments: :app:assembleDebug
+
+      # 把生成的 APK 作为可下载产物上传
+      - name: 上传 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: digit-classifier-debug
+          path: app/build/outputs/apk/debug/*.apk
